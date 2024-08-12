@@ -1,0 +1,21 @@
+# IDEs
+/.idea/
+/.vscode/
+
+# Sub-repositories
+/docs/wiki/
+
+# Dependencies
+/node_modules/
+
+# Builds
+/dist/
+*.woff2
+*.zip
+
+# Misc.
+.DS_Store
+Thumbs.db
+desktop.ini
+*.sw?
+*~
