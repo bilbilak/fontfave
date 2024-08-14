@@ -1,0 +1,51 @@
+name: Convert
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'public/fonts/*'
+
+concurrency:
+  group: 'fonts'
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y fontconfig fontforge
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            public/fonts
+          sparse-checkout-cone-mode: false
+
+      - name: Prepare fonts
+        run: |
+          fonts_dir='public/fonts'
+          for font in "$fonts_dir"/*; do
+            if [ -f "$font" ]; then
+              font_family=$(fc-query -f '%{family}\n' "$font")
+              echo "::group::Converting font: ${font}"
+              fontforge -lang=ff -c "Open(\$1); Generate('${fonts_dir}/${font_family}.woff2');" "$font" || true
+              echo "::endgroup::"
+            fi
+          done
+          find "${fonts_dir}" -name '*.woff2' -print0 | xargs -0 -n 100 zip -j fonts.zip
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: webfonts
+          path: 'fonts.zip'
+          if-no-files-found: error
+          overwrite: true
