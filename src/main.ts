@@ -1,3 +1,5 @@
+import { loadFonts } from './fonts';
+import { handleInputChanges } from './events';
 import './style.css';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
@@ -19,3 +21,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       <div id="selection-round-3" class="column"></div>
   </div>
 `;
+
+(async () => {
+  handleInputChanges();
+  await loadFonts();
+})();
